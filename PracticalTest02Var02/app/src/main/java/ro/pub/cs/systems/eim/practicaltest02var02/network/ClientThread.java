@@ -49,7 +49,7 @@ public class ClientThread extends Thread {
                 infoTextView.post(new Runnable() {
                    @Override
                     public void run() {
-                       infoTextView.setText(finalizedInformation);
+                       infoTextView.setText(infoTextView.getText().toString() + finalizedInformation);
                    }
                 });
             }
