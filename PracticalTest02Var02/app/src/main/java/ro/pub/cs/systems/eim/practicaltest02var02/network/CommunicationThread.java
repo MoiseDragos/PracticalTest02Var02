@@ -1,4 +1,4 @@
-package ro.pub.cs.systems.eim.practicaltest02.network;
+package ro.pub.cs.systems.eim.practicaltest02var02.network;
 
 import android.util.Log;
 
@@ -26,9 +26,9 @@ import cz.msebera.android.httpclient.impl.client.BasicResponseHandler;
 import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 import cz.msebera.android.httpclient.message.BasicNameValuePair;
 import cz.msebera.android.httpclient.protocol.HTTP;
-import ro.pub.cs.systems.eim.practicaltest02.general.Constants;
-import ro.pub.cs.systems.eim.practicaltest02.general.Utilities;
-import ro.pub.cs.systems.eim.practicaltest02.model.WeatherForecastInformation;
+import ro.pub.cs.systems.eim.practicaltest02var02.general.Constants;
+import ro.pub.cs.systems.eim.practicaltest02var02.general.Utilities;
+import ro.pub.cs.systems.eim.practicaltest02var02.model.WeatherForecastInformation;
 
 public class CommunicationThread extends Thread {
 
@@ -53,24 +53,35 @@ public class CommunicationThread extends Thread {
                 Log.e(Constants.TAG, "[COMMUNICATION THREAD] Buffered Reader / Print Writer are null!");
                 return;
             }
-            Log.i(Constants.TAG, "[COMMUNICATION THREAD] Waiting for parameters from client (city / information type!");
-            String city = bufferedReader.readLine();
+            Log.i(Constants.TAG, "[COMMUNICATION THREAD] Waiting for parameters from client information type!");
+            String information = bufferedReader.readLine();
             String informationType = bufferedReader.readLine();
-            if (city == null || city.isEmpty() || informationType == null || informationType.isEmpty()) {
-                Log.e(Constants.TAG, "[COMMUNICATION THREAD] Error receiving parameters from client (city / information type!");
+            if (information == null || information.isEmpty() || informationType == null || informationType.isEmpty()) {
+                Log.e(Constants.TAG, "[COMMUNICATION THREAD] Error receiving parameters from client information type!");
                 return;
             }
+
+            ArrayList<String> infoData = serverThread.getData();
+            String finalInformation = null;
+
+            if(infoData.contains(information)){
+                Log.i(Constants.TAG, "[COMMUNICATION THREAD] Getting the information from the cache...");
+                finalInformation = information;
+            }else{
+                Log.i(Constants.TAG, "[COMMUNICATION THREAD] Getting the information from the webservice...");
+            }
+
             HashMap<String, WeatherForecastInformation> data = serverThread.getData();
             WeatherForecastInformation weatherForecastInformation = null;
-            if (data.containsKey(city)) {
+            if (data.containsKey(information)) {
                 Log.i(Constants.TAG, "[COMMUNICATION THREAD] Getting the information from the cache...");
-                weatherForecastInformation = data.get(city);
+                weatherForecastInformation = data.get(information);
             } else {
                 Log.i(Constants.TAG, "[COMMUNICATION THREAD] Getting the information from the webservice...");
                 HttpClient httpClient = new DefaultHttpClient();
                 HttpPost httpPost = new HttpPost(Constants.WEB_SERVICE_ADDRESS);
                 List<NameValuePair> params = new ArrayList<>();
-                params.add(new BasicNameValuePair(Constants.QUERY_ATTRIBUTE, city));
+                params.add(new BasicNameValuePair(Constants.QUERY_ATTRIBUTE, information));
                 UrlEncodedFormEntity urlEncodedFormEntity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
                 httpPost.setEntity(urlEncodedFormEntity);
                 ResponseHandler<String> responseHandler = new BasicResponseHandler();
@@ -97,7 +108,7 @@ public class CommunicationThread extends Thread {
                         weatherForecastInformation = new WeatherForecastInformation(
                                 temperature, windSpeed, condition, pressure, humidity
                         );
-                        serverThread.setData(city, weatherForecastInformation);
+                        serverThread.setData(information, weatherForecastInformation);
                         break;
                     }
                 }

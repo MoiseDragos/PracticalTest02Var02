@@ -1,4 +1,4 @@
-package ro.pub.cs.systems.eim.practicaltest02.model;
+package ro.pub.cs.systems.eim.practicaltest02var02.model;
 
 public class WeatherForecastInformation {
 

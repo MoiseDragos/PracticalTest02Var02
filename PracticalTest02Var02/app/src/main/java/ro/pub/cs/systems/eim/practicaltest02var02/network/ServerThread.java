@@ -1,22 +1,25 @@
-package ro.pub.cs.systems.eim.practicaltest02.network;
+package ro.pub.cs.systems.eim.practicaltest02var02.network;
 
 import android.util.Log;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import cz.msebera.android.httpclient.client.ClientProtocolException;
-import ro.pub.cs.systems.eim.practicaltest02.general.Constants;
-import ro.pub.cs.systems.eim.practicaltest02.model.WeatherForecastInformation;
+import ro.pub.cs.systems.eim.practicaltest02var02.general.Constants;
+import ro.pub.cs.systems.eim.practicaltest02var02.model.WeatherForecastInformation;
 
 public class ServerThread extends Thread {
 
     private int port = 0;
     private ServerSocket serverSocket = null;
 
-    private HashMap<String, WeatherForecastInformation> data = null;
+    private ArrayList<String> infoData = null;
+
+//    private HashMap<String, WeatherForecastInformation> data = null;
 
     public ServerThread(int port) {
         this.port = port;
@@ -28,7 +31,8 @@ public class ServerThread extends Thread {
                 ioException.printStackTrace();
             }
         }
-        this.data = new HashMap<>();
+//        this.data = new HashMap<>();
+        this.infoData = new ArrayList<String>();
     }
 
     public void setPort(int port) {
@@ -47,13 +51,21 @@ public class ServerThread extends Thread {
         return serverSocket;
     }
 
-    public synchronized void setData(String city, WeatherForecastInformation weatherForecastInformation) {
-        this.data.put(city, weatherForecastInformation);
+    public synchronized void setInfoData(String word) {
+        this.infoData.add(word);
     }
 
-    public synchronized HashMap<String, WeatherForecastInformation> getData() {
-        return data;
+    public synchronized ArrayList<String> getData() {
+        return infoData;
     }
+
+//    public synchronized void setData(String city, WeatherForecastInformation weatherForecastInformation) {
+//        this.data.put(city, weatherForecastInformation);
+//    }
+//
+//    public synchronized HashMap<String, WeatherForecastInformation> getData() {
+//        return data;
+//    }
 
     @Override
     public void run() {
